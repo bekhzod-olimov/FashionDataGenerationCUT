@@ -1,0 +1,9 @@
+streamlit
+Pillow
+numpy
+torch
+torchvision
+dominate
+visdom
+packaging
+GPUtil
