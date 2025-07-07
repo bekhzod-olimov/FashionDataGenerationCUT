@@ -31,9 +31,7 @@ class GANModelWrapper:
     def infer(self, image_A: Image.Image, image_B: Image.Image) -> Image.Image:
         # Preprocess both images
         input_tensor_A = self.transform(image_A).unsqueeze(0)  # [1,C,H,W]
-        input_tensor_B = self.transform(image_B).unsqueeze(0)  # [1,C,H,W]
-        print(input_tensor_A.shape)
-        print(input_tensor_B.shape)
+        input_tensor_B = self.transform(image_B).unsqueeze(0)  # [1,C,H,W]        
         data = {
             'A': input_tensor_A,
             'B': input_tensor_B,
@@ -46,10 +44,8 @@ class GANModelWrapper:
         self.model.test()
         visuals = self.model.get_current_visuals()
         output_tensor = visuals['fake_B'].detach().cpu()
-
         # Convert to PIL
-        print(f"output_tensor.shape -> {output_tensor.shape}")
-        # output_image = util.tensor2im(output_tensor[0])
+        # print(f"output_tensor.shape -> {output_tensor.shape}")        
         output_image = (output_tensor[0] * 255).detach().cpu().permute(1,2,0).numpy().astype("uint8")
         return Image.fromarray(output_image)
 
