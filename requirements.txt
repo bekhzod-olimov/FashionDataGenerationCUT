@@ -1,8 +1,8 @@
-streamlit==1.41.0
+streamlit
 Pillow
 numpy
-torch==2.0.1
-torchvision==0.15.2
+torch
+torchvision
 dominate
 visdom
 packaging
