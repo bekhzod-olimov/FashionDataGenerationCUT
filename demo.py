@@ -5,9 +5,7 @@ from options.test_options import TestOptions
 from models import create_model
 from data.base_dataset import get_transform
 from PIL import Image
-import torch
 import io
-import util.util as util
 
 class GANModelWrapper:
     def __init__(self):
@@ -20,7 +18,7 @@ class GANModelWrapper:
         self.opt.display_id = -1
         self.opt.phase = 'test'
         self.opt.isTrain = False
-        self.opt.checkpoints_dir = "model_files"        
+        # self.opt.checkpoints_dir = "model_files"
 
         # Initialize model
         self.model = create_model(self.opt)
@@ -30,10 +28,18 @@ class GANModelWrapper:
         # Use transform defined in data pipeline
         self.transform = get_transform(self.opt)
 
-    def infer(self, image: Image.Image) -> Image.Image:
-        # Preprocess
-        input_tensor = self.transform(image).unsqueeze(0)  # [1,C,H,W]
-        data = {'A': input_tensor, 'A_paths': ''}
+    def infer(self, image_A: Image.Image, image_B: Image.Image) -> Image.Image:
+        # Preprocess both images
+        input_tensor_A = self.transform(image_A).unsqueeze(0)  # [1,C,H,W]
+        input_tensor_B = self.transform(image_B).unsqueeze(0)  # [1,C,H,W]
+        print(input_tensor_A.shape)
+        print(input_tensor_B.shape)
+        data = {
+            'A': input_tensor_A,
+            'B': input_tensor_B,
+            'A_paths': '',
+            'B_paths': ''
+        }
 
         # Run inference
         self.model.set_input(data)
@@ -42,32 +48,34 @@ class GANModelWrapper:
         output_tensor = visuals['fake_B'].detach().cpu()
 
         # Convert to PIL
-        output_image = util.tensor2im(output_tensor[0])
+        print(f"output_tensor.shape -> {output_tensor.shape}")
+        # output_image = util.tensor2im(output_tensor[0])
+        output_image = (output_tensor[0] * 255).detach().cpu().permute(1,2,0).numpy().astype("uint8")
         return Image.fromarray(output_image)
 
-# Title
+
 st.set_page_config(page_title="GAN Image Generator", layout="centered")
 st.title("🎨 Image-to-Image GAN Demo")
 
-# Load model once
 @st.cache_resource
 def load_model(): return GANModelWrapper()
 
 model = load_model()
 
-# Upload input image
-uploaded_file = st.file_uploader("Upload an input image", type=["png", "jpg", "jpeg"])
+uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jpg", "jpeg"])
+uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg", "jpeg"])
 
-if uploaded_file:
-    input_image = Image.open(uploaded_file).convert("RGB")
-    st.image(input_image, caption="Input Image", use_column_width=True)
+if uploaded_file_A and uploaded_file_B:
+    input_image_A = Image.open(uploaded_file_A).convert("RGB")
+    input_image_B = Image.open(uploaded_file_B).convert("RGB")
+    st.image(input_image_A, caption="Input Image (A)", use_column_width=True)
+    st.image(input_image_B, caption="Style Image (B)", use_column_width=True)
 
     if st.button("Generate"):
         with st.spinner("Generating image..."):
-            output_image = model.infer(input_image)
+            output_image = model.infer(input_image_A, input_image_B)
             st.image(output_image, caption="Generated Image", use_column_width=True)
 
-        # Download button
         buf = io.BytesIO()
         output_image.save(buf, format="PNG")
         st.download_button("Download Result", buf.getvalue(), file_name="generated.png", mime="image/png")
