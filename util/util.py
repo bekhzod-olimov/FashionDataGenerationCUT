@@ -40,6 +40,16 @@ def find_class_in_module(target_cls_name, module):
 
     return cls
 
+def list_sample_images(imgs_dir='imgs'):
+    image_A_samples = []
+    image_B_samples = []
+    if os.path.exists(imgs_dir) and os.path.isdir(imgs_dir):
+        for filename in sorted(os.listdir(imgs_dir)):
+            if 'real_A' in filename:
+                image_A_samples.append(filename)
+            elif 'real_B' in filename:
+                image_B_samples.append(filename)
+    return image_A_samples, image_B_samples
 
 def tensor2im(input_image, imtype=np.uint8):
     """"Converts a Tensor array into a numpy image array.
