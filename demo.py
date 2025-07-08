@@ -1,11 +1,9 @@
-import streamlit as st
+import io, streamlit as st
 from PIL import Image
-import io
 from options.test_options import TestOptions
 from models import create_model
 from data.base_dataset import get_transform
 from PIL import Image
-import io
 
 class GANModelWrapper:
     def __init__(self):
