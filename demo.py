@@ -1,9 +1,10 @@
-import io, streamlit as st
+import io, os, streamlit as st
 from PIL import Image
 from options.test_options import TestOptions
 from models import create_model
 from data.base_dataset import get_transform
 from PIL import Image
+from util.util import list_sample_images
 
 class GANModelWrapper:
     def __init__(self):
@@ -48,23 +49,74 @@ class GANModelWrapper:
         return Image.fromarray(output_image)
 
 
+# st.set_page_config(page_title="GAN Image Generator", layout="centered")
+# st.title("🎨 Image-to-Image GAN Demo")
+
+# @st.cache_resource
+# def load_model(): return GANModelWrapper()
+
+# model = load_model()
+
+# uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jpg", "jpeg"])
+# uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg", "jpeg"])
+
+# if uploaded_file_A and uploaded_file_B:
+#     input_image_A = Image.open(uploaded_file_A).convert("RGB")
+#     input_image_B = Image.open(uploaded_file_B).convert("RGB")
+#     st.image(input_image_A, caption="Input Image (A)", use_column_width=True)
+#     st.image(input_image_B, caption="Style Image (B)", use_column_width=True)
+
+#     if st.button("Generate"):
+#         with st.spinner("Generating image..."):
+#             output_image = model.infer(input_image_A, input_image_B)
+#             st.image(output_image, caption="Generated Image", use_column_width=True)
+
+#         buf = io.BytesIO()
+#         output_image.save(buf, format="PNG")
+#         st.download_button("Download Result", buf.getvalue(), file_name="generated.png", mime="image/png")
+
 st.set_page_config(page_title="GAN Image Generator", layout="centered")
 st.title("🎨 Image-to-Image GAN Demo")
 
 @st.cache_resource
-def load_model(): return GANModelWrapper()
+def load_model():
+    return GANModelWrapper()
 
 model = load_model()
 
+# --- Sample image selection ---
+image_A_samples, image_B_samples = list_sample_images('imgs')
+
+st.sidebar.header("Or select a sample image:")
+sample_A = st.sidebar.selectbox("Sample Input Image (A)", ["None"] + image_A_samples)
+sample_B = st.sidebar.selectbox("Sample Style Image (B)", ["None"] + image_B_samples)
+
+# --- File uploaders ---
 uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jpg", "jpeg"])
 uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg", "jpeg"])
 
-if uploaded_file_A and uploaded_file_B:
+# --- Image selection logic ---
+input_image_A = None
+input_image_B = None
+
+if sample_A != "None":
+    input_image_A = Image.open(os.path.join('imgs', sample_A)).convert("RGB")
+elif uploaded_file_A:
     input_image_A = Image.open(uploaded_file_A).convert("RGB")
+
+if sample_B != "None":
+    input_image_B = Image.open(os.path.join('imgs', sample_B)).convert("RGB")
+elif uploaded_file_B:
     input_image_B = Image.open(uploaded_file_B).convert("RGB")
+
+# --- Display selected images ---
+if input_image_A:
     st.image(input_image_A, caption="Input Image (A)", use_column_width=True)
+if input_image_B:
     st.image(input_image_B, caption="Style Image (B)", use_column_width=True)
 
+# --- Generate and download ---
+if input_image_A and input_image_B:
     if st.button("Generate"):
         with st.spinner("Generating image..."):
             output_image = model.infer(input_image_A, input_image_B)
