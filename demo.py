@@ -1,14 +1,12 @@
 import io, os, streamlit as st
 from PIL import Image
-from options.test_options import TestOptions
 from models import create_model
-from data.base_dataset import get_transform
-from PIL import Image
 from util.util import list_sample_images
+from data.base_dataset import get_transform
+from options.test_options import TestOptions
 
 class GANModelWrapper:
-    def __init__(self):
-        # self.opt = TestOptions().parse(save=False)
+    def __init__(self):        
         self.opt = TestOptions().parse()
         self.opt.num_threads = 0
         self.opt.batch_size = 1
@@ -16,8 +14,7 @@ class GANModelWrapper:
         self.opt.no_flip = True
         self.opt.display_id = -1
         self.opt.phase = 'test'
-        self.opt.isTrain = False
-        # self.opt.checkpoints_dir = "model_files"
+        self.opt.isTrain = False        
 
         # Initialize model
         self.model = create_model(self.opt)
