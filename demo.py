@@ -57,8 +57,9 @@ model = load_model()
 image_A_samples, image_B_samples = list_sample_images('imgs')
 
 st.sidebar.header("Or select a sample image:")
-sample_A = st.sidebar.selectbox("Sample Input Image (A)", ["None"] + image_A_samples)
-sample_B = st.sidebar.selectbox("Sample Style Image (B)", ["None"] + image_B_samples)
+placeholder = "Click here to choose from the list"
+sample_A = st.sidebar.selectbox("Sample Input Image (A)", [placeholder] + image_A_samples)
+sample_B = st.sidebar.selectbox("Sample Style Image (B)", [placeholder] + image_B_samples)
 
 # --- File uploaders ---
 uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jpg", "jpeg"])
@@ -67,12 +68,12 @@ uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg
 # --- Image selection logic ---
 input_image_A, input_image_B = None, None
 
-if sample_A != "None":
+if sample_A != placeholder:
     input_image_A = Image.open(os.path.join('imgs', sample_A)).convert("RGB")
 elif uploaded_file_A:
     input_image_A = Image.open(uploaded_file_A).convert("RGB")
 
-if sample_B != "None":
+if sample_B != placeholder:
     input_image_B = Image.open(os.path.join('imgs', sample_B)).convert("RGB")
 elif uploaded_file_B:
     input_image_B = Image.open(uploaded_file_B).convert("RGB")
