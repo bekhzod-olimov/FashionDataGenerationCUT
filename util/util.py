@@ -41,8 +41,7 @@ def find_class_in_module(target_cls_name, module):
     return cls
 
 def list_sample_images(imgs_dir='imgs'):
-    image_A_samples = []
-    image_B_samples = []
+    image_A_samples, image_B_samples = [], []     
     if os.path.exists(imgs_dir) and os.path.isdir(imgs_dir):
         for filename in sorted(os.listdir(imgs_dir)):            
             if "real" not in filename: continue
