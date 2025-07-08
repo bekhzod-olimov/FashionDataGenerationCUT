@@ -111,16 +111,16 @@ elif uploaded_file_B:
 
 # --- Display selected images ---
 if input_image_A:
-    st.image(input_image_A, caption="Input Image (A)", use_column_width=True)
+    st.image(input_image_A, caption="Input Image (A)", use_container_width=True)
 if input_image_B:
-    st.image(input_image_B, caption="Style Image (B)", use_column_width=True)
+    st.image(input_image_B, caption="Style Image (B)", use_container_width=True)
 
 # --- Generate and download ---
 if input_image_A and input_image_B:
     if st.button("Generate"):
         with st.spinner("Generating image..."):
             output_image = model.infer(input_image_A, input_image_B)
-            st.image(output_image, caption="Generated Image", use_column_width=True)
+            st.image(output_image, caption="Generated Image", use_container_width=True)
 
         buf = io.BytesIO()
         output_image.save(buf, format="PNG")
