@@ -44,8 +44,7 @@ def list_sample_images(imgs_dir='imgs'):
     image_A_samples = []
     image_B_samples = []
     if os.path.exists(imgs_dir) and os.path.isdir(imgs_dir):
-        for filename in sorted(os.listdir(imgs_dir)):
-            print(f"Skipping {filename}")
+        for filename in sorted(os.listdir(imgs_dir)):            
             if "real" not in filename: continue
             image_A_samples.append(filename)  if 'real_A' in filename else image_B_samples.append(filename)                
     return image_A_samples, image_B_samples
