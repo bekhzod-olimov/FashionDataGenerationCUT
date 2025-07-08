@@ -48,39 +48,11 @@ class GANModelWrapper:
         output_image = (output_tensor[0] * 255).detach().cpu().permute(1,2,0).numpy().astype("uint8")
         return Image.fromarray(output_image)
 
-
-# st.set_page_config(page_title="GAN Image Generator", layout="centered")
-# st.title("🎨 Image-to-Image GAN Demo")
-
-# @st.cache_resource
-# def load_model(): return GANModelWrapper()
-
-# model = load_model()
-
-# uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jpg", "jpeg"])
-# uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg", "jpeg"])
-
-# if uploaded_file_A and uploaded_file_B:
-#     input_image_A = Image.open(uploaded_file_A).convert("RGB")
-#     input_image_B = Image.open(uploaded_file_B).convert("RGB")
-#     st.image(input_image_A, caption="Input Image (A)", use_column_width=True)
-#     st.image(input_image_B, caption="Style Image (B)", use_column_width=True)
-
-#     if st.button("Generate"):
-#         with st.spinner("Generating image..."):
-#             output_image = model.infer(input_image_A, input_image_B)
-#             st.image(output_image, caption="Generated Image", use_column_width=True)
-
-#         buf = io.BytesIO()
-#         output_image.save(buf, format="PNG")
-#         st.download_button("Download Result", buf.getvalue(), file_name="generated.png", mime="image/png")
-
 st.set_page_config(page_title="GAN Image Generator", layout="centered")
 st.title("🎨 Image-to-Image GAN Demo")
 
 @st.cache_resource
-def load_model():
-    return GANModelWrapper()
+def load_model(): return GANModelWrapper()
 
 model = load_model()
 
@@ -96,8 +68,7 @@ uploaded_file_A = st.file_uploader("Upload an input image (A)", type=["png", "jp
 uploaded_file_B = st.file_uploader("Upload a style image (B)", type=["png", "jpg", "jpeg"])
 
 # --- Image selection logic ---
-input_image_A = None
-input_image_B = None
+input_image_A, input_image_B = None, None
 
 if sample_A != "None":
     input_image_A = Image.open(os.path.join('imgs', sample_A)).convert("RGB")
